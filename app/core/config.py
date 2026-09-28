@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     qdrant_url: str
     qdrant_collection: str = "documents"
     chat_history_ttl_seconds: int = 3600
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_dimension: int = 384
 
 
 @lru_cache
