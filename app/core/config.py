@@ -13,9 +13,11 @@ class Settings(BaseSettings):
     redis_url: str
     qdrant_url: str
     qdrant_collection: str = "documents"
-    chat_history_ttl_seconds: int = 3600
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dimension: int = 384
+    max_upload_bytes: int = 10 * 1024 * 1024
+    chat_history_max_messages: int = 20
+    chat_history_ttl_seconds: int = 3600
 
 
 @lru_cache

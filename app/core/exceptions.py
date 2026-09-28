@@ -12,3 +12,15 @@ class ExtractionError(AppError):
 
 class EmptyDocumentError(AppError):
     """No text could be extracted (e.g. a scanned PDF)."""
+
+
+class FileTooLargeError(AppError):
+    """The uploaded file exceeds the size limit."""
+
+
+class DocumentNotFoundError(AppError):
+    """No document exists with the given id."""
+
+
+class IngestionError(AppError):
+    """Embedding or vector storage failed while ingesting a document."""
