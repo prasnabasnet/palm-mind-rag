@@ -8,7 +8,10 @@ from app.core.config import Settings, get_settings
 from app.db.session import get_session
 from app.embeddings.base import Embedder
 from app.llm.base import ChatLLM
+from app.repositories.booking_repository import BookingRepository
 from app.repositories.document_repository import DocumentRepository
+from app.services.booking_service import BookingService
+from app.services.chat_service import ChatService
 from app.services.ingestion_service import IngestionService
 from app.services.memory_service import ChatMemory, RedisChatMemory
 from app.services.rag_service import RagService
@@ -63,6 +66,21 @@ def get_rag_service(
         embedder, vector_store, llm, memory, settings.rag_top_k, settings.rag_min_score
     )
 
+def get_booking_service(
+    session: SessionDep, llm: Annotated[ChatLLM, Depends(get_llm)]
+) -> BookingService:
+    return BookingService(llm, BookingRepository(session))
+
+
+def get_chat_service(
+    rag_service: Annotated[RagService, Depends(get_rag_service)],
+    booking_service: Annotated[BookingService, Depends(get_booking_service)],
+    memory: Annotated[ChatMemory, Depends(get_chat_memory)],
+) -> ChatService:
+    return ChatService(rag_service, booking_service, memory)
+
+
+ChatServiceDep = Annotated[ChatService, Depends(get_chat_service)]
 
 RagServiceDep = Annotated[RagService, Depends(get_rag_service)]
 

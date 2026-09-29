@@ -15,6 +15,12 @@ class ChatMemory(Protocol):
     async def get_history(self, session_id: str) -> list[ChatMessage]: ...
 
     async def clear(self, session_id: str) -> None: ...
+    
+    async def get_pending_booking(self, session_id: str) -> str | None: ...
+
+    async def set_pending_booking(self, session_id: str, slots_json: str) -> None: ...
+
+    async def clear_pending_booking(self, session_id: str) -> None: ...
 
 
 class RedisChatMemory:
@@ -27,6 +33,22 @@ class RedisChatMemory:
     @staticmethod
     def _key(session_id: str) -> str:
         return f"chat:{session_id}:history"
+
+    @staticmethod
+    def _booking_key(session_id: str) -> str:
+        return f"chat:{session_id}:pending_booking"
+
+    async def get_pending_booking(self, session_id: str) -> str | None:
+        value = await self._client.get(self._booking_key(session_id))
+        return str(value) if value is not None else None
+
+    async def set_pending_booking(self, session_id: str, slots_json: str) -> None:
+        await self._client.set(
+            self._booking_key(session_id), slots_json, ex=self._ttl_seconds
+        )
+
+    async def clear_pending_booking(self, session_id: str) -> None:
+        await self._client.delete(self._booking_key(session_id))
 
     async def append(self, session_id: str, messages: list[ChatMessage]) -> None:
         if not messages:
