@@ -24,3 +24,6 @@ class DocumentNotFoundError(AppError):
 
 class IngestionError(AppError):
     """Embedding or vector storage failed while ingesting a document."""
+
+class LLMError(AppError):
+    """The language model provider returned an error or was unreachable."""

@@ -45,4 +45,4 @@ async def get_document(document_id: uuid.UUID, service: IngestionServiceDep) -> 
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(document_id: uuid.UUID, service: IngestionServiceDep) -> None:
-await service.delete_document(document_id)
+    await service.delete_document(document_id)

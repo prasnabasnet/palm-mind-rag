@@ -7,6 +7,7 @@ from app.core.exceptions import (
     EmptyDocumentError,
     ExtractionError,
     FileTooLargeError,
+    LLMError,
     UnsupportedFileTypeError,
 )
 
@@ -16,6 +17,7 @@ _STATUS_BY_ERROR: dict[type[Exception], int] = {
     EmptyDocumentError: 422,
     ExtractionError: 422,
     DocumentNotFoundError: 404,
+    LLMError: 502,
 }
 
 

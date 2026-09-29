@@ -9,6 +9,7 @@ from app.api.errors import register_exception_handlers
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.embeddings.fastembed_embedder import FastEmbedEmbedder
+from app.llm.openai_compatible import OpenAICompatibleLLM
 from app.vectorstore.qdrant_store import QdrantVectorStore
 
 
@@ -20,13 +21,19 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     store = QdrantVectorStore(qdrant_client, settings.qdrant_collection)
     await store.ensure_collection(embedder.dimension)
     redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
+    llm = OpenAICompatibleLLM(
+        settings.llm_api_key.get_secret_value(), settings.llm_base_url, settings.llm_model
+    )
 
     app.state.embedder = embedder
     app.state.vector_store = store
     app.state.redis = redis_client
+    app.state.llm = llm
     yield
+    await llm.aclose()
     await redis_client.aclose()
     await qdrant_client.close()
+    
 
 
 def create_app() -> FastAPI:

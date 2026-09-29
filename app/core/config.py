@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +19,11 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 10 * 1024 * 1024
     chat_history_max_messages: int = 20
     chat_history_ttl_seconds: int = 3600
+    llm_api_key: SecretStr
+    llm_base_url: str = "https://api.groq.com/openai/v1"
+    llm_model: str
+    rag_top_k: int = 4
+    rag_min_score: float = 0.35
 
 
 @lru_cache
